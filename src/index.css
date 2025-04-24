@@ -17,4 +17,16 @@
 
   --color-accent: #6D8EA0;
   --color-dark-accent: #88AACC;
+
+  --color-warning:	#D67E2D;
+  --color-dark-warning:	#E59B47;
+
+  --color-success:	#5B8C5A;
+  --color-dark-success:	#7BAF75;
+
+  --color-danger:	#9C3D38;
+  --color-dark-danger:	#C35850;
+
+  --color-border:	#CCCCCC;
+  --color-dark-border:	#333333;
 }
