@@ -2,10 +2,10 @@ import Header from "./components/Header.tsx";
 import Footer from "./components/Footer";
 import CurrentWeather from "./components/Weather/CurrentWeather";
 import SearchBar from "./components/SearchBar";
-import { useState } from "react";
+import { useCityStore } from "./store/cityStore";
 
 function App() {
-  const [city, setCity] = useState("London");
+  const { city, setCity } = useCityStore();
 
   const handleSearch = (newCity: string) => {
     setCity(newCity);
