@@ -33,9 +33,13 @@ export const weatherService = {
   getCurrentWeatherByCity: async (city: string): Promise<CurrentWeather> => {
     try {
       const apiClient = getApiClient();
-      const response = await apiClient.get('/weather', {
-        params: { q: city }
-      });
+      const isLocalDev = import.meta.env.DEV;
+      
+      // In production use the Netlify function, in development call OpenWeather directly
+      const endpoint = isLocalDev ? '/weather' : '/weather';
+      const params = isLocalDev ? { q: city } : { city };
+      
+      const response = await apiClient.get(endpoint, { params });
       return response.data;
     } catch (error) {
       console.error('Error fetching weather data:', error);
@@ -49,7 +53,13 @@ export const weatherService = {
   getCurrentWeatherByCoords: async (lat: number, lon: number): Promise<CurrentWeather> => {
     try {
       const apiClient = getApiClient();
-      const response = await apiClient.get('/weather', {
+      const isLocalDev = import.meta.env.DEV;
+      
+      // In production use the Netlify function, in development call OpenWeather directly
+      const endpoint = isLocalDev ? '/weather' : '/weather';
+      // Parameter names stay the same for both
+      
+      const response = await apiClient.get(endpoint, {
         params: { lat, lon }
       });
       return response.data;

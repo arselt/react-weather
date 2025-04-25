@@ -8,6 +8,7 @@ React Weather is a web application that fetches weather data from the OpenWeathe
 - Current weather conditions display
 - City-based and location-based weather search
 - Responsive design for all devices
+- Secure API key handling using Netlify Functions
 
 ## Installation
 
@@ -24,13 +25,25 @@ To run this project locally, follow these steps:
    ```
 3. Get an API key from [OpenWeather](https://openweathermap.org/api) and create a `.env` file in the project directory:
    ```sh
-   VITE_OPENWEATHER_API_KEY=your_openweather_api_key_here
-   VITE_OPENWEATHER_BASE_URL=https://api.openweathermap.org/data/2.5
+   VITE_API_KEY=your_openweather_api_key_here
    ```
 4. Start the development server:
    ```sh
    npm run dev
    ```
+
+## Deployment to Netlify
+
+This project uses Netlify Functions to securely handle API requests without exposing your API key in the frontend code.
+
+1. Fork or clone this repository to your GitHub account
+2. Connect your repository to Netlify
+3. Add the following environment variable in Netlify site settings:
+   - Key: `OPENWEATHER_API_KEY`
+   - Value: Your OpenWeather API key
+4. Deploy the site
+
+The project automatically uses the local API key during development and switches to Netlify Functions in production.
 
 ## Technologies Used
 - React 19
@@ -40,3 +53,4 @@ To run this project locally, follow these steps:
 - Zustand for state management
 - Tailwind CSS for styling
 - React Loading Skeleton for loading states
+- Netlify Functions for secure API handling
