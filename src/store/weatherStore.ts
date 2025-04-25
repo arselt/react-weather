@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { weatherService, CurrentWeather } from '../services/api/weatherService';
+import { analyticsService } from '../services/analyticsService';
 import { useUnitsStore } from './unitsStore';
 
 interface WeatherStore {
@@ -23,6 +24,9 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
   fetchWeatherByCity: async (city: string) => {
     set({ loading: true, error: null, currentCity: city, currentCoords: null });
     try {
+      // Track city search
+      analyticsService.trackSearch(city, 'city');
+      
       const weatherData = await weatherService.getCurrentWeatherByCity(city);
       set({ currentWeather: weatherData, loading: false });
     } catch (error) {
@@ -36,6 +40,9 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
   fetchWeatherByCoords: async (lat: number, lon: number) => {
     set({ loading: true, error: null, currentCity: null, currentCoords: { lat, lon } });
     try {
+      // Track coordinates search
+      analyticsService.trackSearch(`${lat},${lon}`, 'coordinates');
+      
       const weatherData = await weatherService.getCurrentWeatherByCoords(lat, lon);
       set({ currentWeather: weatherData, loading: false });
     } catch (error) {

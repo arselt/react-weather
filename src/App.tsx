@@ -3,9 +3,16 @@ import Footer from "./components/Footer";
 import CurrentWeather from "./components/Weather/CurrentWeather";
 import SearchBar from "./components/SearchBar";
 import { useCityStore } from "./store/cityStore";
+import { useEffect } from "react";
+import { analyticsService } from "./services/analyticsService";
 
 function App() {
   const { city, setCity } = useCityStore();
+
+  // Track page view when the app loads
+  useEffect(() => {
+    analyticsService.pageView('/', 'Weather App Homepage');
+  }, []);
 
   const handleSearch = (newCity: string) => {
     setCity(newCity);

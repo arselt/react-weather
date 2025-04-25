@@ -1,4 +1,5 @@
 import React, { useState, KeyboardEvent, ChangeEvent } from 'react';
+import { analyticsService } from '../services/analyticsService';
 
 interface SearchBarProps {
   initialCity: string;
@@ -14,12 +15,16 @@ const SearchBar: React.FC<SearchBarProps> = ({ initialCity, onSearch }) => {
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      onSearch(city);
+      handleSearch();
     }
   };
 
   const handleSearch = () => {
-    onSearch(city);
+    if (city.trim()) {
+      // Track the search event
+      analyticsService.trackSearch(city, 'city');
+      onSearch(city);
+    }
   };
 
   return (
@@ -40,6 +45,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ initialCity, onSearch }) => {
                     border-2 border-l-0 border-text-primary dark:border-dark-text-primary 
                     hover:translate-y-[-2px] transition-transform"
           onClick={handleSearch}
+          data-analytics="search-button"
         >
           Search
         </button>
