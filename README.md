@@ -1,13 +1,20 @@
-# React Weather
+# 🌦️ React Weather
 
 React Weather is a web application that fetches weather data from the OpenWeather API. Built with React, TypeScript, and Vite, it provides real-time weather information, allowing users to search for weather by city name or coordinates.
+
+
+## Live Demo
+<a href="https://climarselt.netlify.app/" target="_blank" rel="noopener noreferrer">🚀 Deploy</a>
+<a href="https://github.com/arselt/react-weather" target="_blank" rel="noopener noreferrer">📄 GitHub Repository</a>
+
+![App UI thumbnail](/thumbnail.png "UI Screenshot")
 
 ## Features
 - Fetches and displays weather data from OpenWeather API
 - Support for both metric and imperial units
 - Current weather conditions display
 - City-based and location-based weather search
-- Responsive design for all devices
+- Responsive mobile first design
 - Secure API key handling using Netlify Functions
 
 ## Installation
