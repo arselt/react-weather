@@ -1,54 +1,42 @@
-# React + TypeScript + Vite
+# React Weather
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React Weather is a web application that fetches weather data from the OpenWeather API. Built with React, TypeScript, and Vite, it provides real-time weather information, allowing users to search for weather by city name or coordinates.
 
-Currently, two official plugins are available:
+## Features
+- Fetches and displays weather data from OpenWeather API
+- Support for both metric and imperial units
+- Current weather conditions display
+- City-based and location-based weather search
+- Responsive design for all devices
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Installation
 
-## Expanding the ESLint configuration
+To run this project locally, follow these steps:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/arselt/react-weather.git
+   cd react-weather
+   ```
+2. Install dependencies:
+   ```sh
+   npm install
+   ```
+3. Get an API key from [OpenWeather](https://openweathermap.org/api) and create a `.env` file in the project directory:
+   ```sh
+   VITE_OPENWEATHER_API_KEY=your_openweather_api_key_here
+   VITE_OPENWEATHER_BASE_URL=https://api.openweathermap.org/data/2.5
+   ```
+4. Start the development server:
+   ```sh
+   npm run dev
+   ```
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## Technologies Used
+- React 19
+- TypeScript
+- Vite
+- Axios for API requests
+- Zustand for state management
+- Tailwind CSS for styling
+- React Loading Skeleton for loading states

@@ -4,9 +4,9 @@ import { useUnitsStore } from '../../store/unitsStore';
 // Create a base axios instance with common configuration
 const createApiClient = (unit: string = 'metric') => {
   return axios.create({
-    baseURL: import.meta.env.VITE_OPENWEATHER_BASE_URL,
+    baseURL: 'https://api.openweathermap.org/data/2.5',
     params: {
-      appid: import.meta.env.VITE_OPENWEATHER_API_KEY,
+      appid: import.meta.env.VITE_API_KEY,
       units: unit, // Units parameter can be 'metric' or 'imperial'
     },
     headers: {
@@ -22,4 +22,4 @@ export const getApiClient = () => {
 };
 
 // Export a default client that uses metric as fallback
-export default createApiClient(); 
+export default createApiClient();
