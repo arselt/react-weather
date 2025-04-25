@@ -51,6 +51,30 @@ const handler: Handler = async (event) => {
       body: JSON.stringify(response.data),
     };
   } catch (error) {
+    // Check if it's an Axios error with a response
+    if (axios.isAxiosError(error) && error.response) {
+      // If the OpenWeather API returns 404, pass it through
+      if (error.response.status === 404) {
+        return {
+          statusCode: 404,
+          body: JSON.stringify({ 
+            error: 'Location not found',
+            details: error.response.data
+          }),
+        };
+      }
+      
+      // Handle other API errors with their original status code
+      return {
+        statusCode: error.response.status,
+        body: JSON.stringify({ 
+          error: error.response.statusText,
+          details: error.response.data
+        }),
+      };
+    }
+    
+    // Handle other unexpected errors
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     
     return {

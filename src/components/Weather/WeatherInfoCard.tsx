@@ -4,15 +4,17 @@ interface WeatherInfoCardProps {
   label: string;
   value: ReactNode;
   unit?: string;
+  className?: string;
 }
 
 const WeatherInfoCard: React.FC<WeatherInfoCardProps> = ({ 
   label, 
   value,
-  unit = ''
+  unit = '',
+  className = ''
 }) => {
   return (
-    <div className="border-2 border-text-primary dark:border-dark-text-primary p-3">
+    <div className={`border-2 border-text-primary dark:border-dark-text-primary p-3 sm:col-span-1 ${className}`}>
       <span className="block text-text-secondary dark:text-dark-text-secondary font-medium">
         {label}
       </span>
