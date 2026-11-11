@@ -42,10 +42,10 @@ const CurrentWeather: React.FC<CurrentWeatherProps> = ({ city, lat, lon }) => {
   const { country } = sys;
   const { speed } = wind;
   
-  const windSpeedUnit = unit === "metric" ? "M/s" : " Mph";
+  const windSpeedUnit = unit === "metric" ? " m/s" : " mph";
 
   return (
-    <div className="bg-surface dark:bg-dark-surface border-2 border-text-primary dark:border-dark-text-primary p-6 w-full shadow-[5px_5px_0px_0px_rgba(0,0,0,0.8)] dark:shadow-[5px_5px_0px_0px_rgba(255,255,255,0.5)]">
+    <section className="bg-surface dark:bg-dark-surface border-2 border-text-primary dark:border-dark-text-primary p-6 w-full brutal-shadow">
       <div className="flex flex-col">
         <h2 className="text-3xl font-extrabold text-text-primary dark:text-dark-text-primary mb-2">
           {name}, {country}
@@ -80,7 +80,7 @@ const CurrentWeather: React.FC<CurrentWeatherProps> = ({ city, lat, lon }) => {
           />
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

@@ -6,7 +6,8 @@ const Footer: React.FC = () => {
       <div className="px-4">
         <div className="flex justify-center items-center py-6 max-w-3xl mx-auto">
           <p className="text-center text-text-secondary dark:text-dark-text-secondary text-balance">
-            <span className="font-bold text-text-primary dark:text-dark-text-primary">ClimArselt</span> is a Neo-Brutalist, mobile-first weather app built with React and TypeScript using Vite. Data provided by OpenWeatherMap API via axios. State management with Zustand, skeletons with react-loading-skeleton. <span className="font-bold text-text-primary dark:text-dark-text-primary"> Developed by <a href="https://arselt.com" className="text-accent dark:text-dark-accent hover:underline" target="_blank" rel="noopener noreferrer">Arselt</a> .</span>
+            <span className="font-bold text-text-primary dark:text-dark-text-primary">ClimArselt</span> is a Neo-Brutalist, mobile-first weather app built with React, TypeScript and Vite. Weather data from the OpenWeatherMap API. Developed by{' '}
+            <a href="https://arselt.com" className="text-accent dark:text-dark-accent hover:underline" target="_blank" rel="noopener noreferrer">Arselt</a>.
           </p>
         </div>
       </div>

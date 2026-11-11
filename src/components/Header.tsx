@@ -19,28 +19,28 @@ function Header() {
   return (
     <header className="w-full bg-surface dark:bg-dark-surface border-b-2 border-text-primary dark:border-dark-text-primary shadow-[0_4px_0px_0px_rgba(0,0,0,0.2)] dark:shadow-[0_4px_0px_0px_rgba(255,255,255,0.1)]">
       <div className="px-4">
-        <div className="flex justify-between items-center gap-4 py-6 max-w-3xl mx-auto">
+        <div className="flex flex-wrap justify-between items-center gap-4 py-6 max-w-3xl mx-auto">
           <h1 className="text-3xl font-extrabold text-text-primary dark:text-dark-text-primary tracking-tight">
             ClimArselt
           </h1>
           <div className="flex gap-2">
             <button
+              type="button"
               onClick={handleThemeToggle}
-              className="px-4 py-2 bg-accent dark:bg-dark-accent text-white font-bold
+              className="px-4 py-2 bg-accent dark:bg-dark-accent text-text-primary dark:text-dark-bg font-bold whitespace-nowrap
                         border-2 border-text-primary dark:border-dark-text-primary
-                        shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.5)]
-                        hover:translate-y-[-2px] transition-transform"
+                        brutal-shadow hover:translate-y-[-2px] transition-transform"
               data-analytics="theme-toggle"
             >
               {theme === "light" ? "Dark Mode" : "Light Mode"}
             </button>
 
             <button
+              type="button"
               onClick={handleUnitToggle}
-              className="px-4 py-2 bg-surface dark:bg-dark-surface text-text-primary dark:text-dark-text-primary font-bold
+              className="px-4 py-2 bg-surface dark:bg-dark-surface text-text-primary dark:text-dark-text-primary font-bold whitespace-nowrap
                         border-2 border-text-primary dark:border-dark-text-primary
-                        shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.5)]
-                        hover:translate-y-[-2px] transition-transform"
+                        brutal-shadow hover:translate-y-[-2px] transition-transform"
               data-analytics="unit-toggle"
             >
               {unit === "metric" ? "Switch to °F" : "Switch to °C"}

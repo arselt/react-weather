@@ -1,5 +1,4 @@
-import React, { useState, KeyboardEvent, ChangeEvent } from 'react';
-import { analyticsService } from '../services/analyticsService';
+import React, { useState, FormEvent, ChangeEvent } from 'react';
 
 interface SearchBarProps {
   initialCity: string;
@@ -9,49 +8,52 @@ interface SearchBarProps {
 const SearchBar: React.FC<SearchBarProps> = ({ initialCity, onSearch }) => {
   const [city, setCity] = useState(initialCity);
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setCity(e.target.value);
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setCity(event.target.value);
   };
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
-
-  const handleSearch = () => {
-    if (city.trim()) {
-      // Track the search event
-      analyticsService.trackSearch(city, 'city');
-      onSearch(city);
+  // Search is tracked in weatherStore, so it is not tracked here too
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const trimmedCity = city.trim();
+    if (trimmedCity) {
+      onSearch(trimmedCity);
     }
   };
 
   return (
     <div className="mb-6 flex justify-center w-full">
-      <div className="flex w-full shadow-[5px_5px_0px_0px_rgba(0,0,0,0.8)] dark:shadow-[5px_5px_0px_0px_rgba(255,255,255,0.5)]">
+      <form
+        role="search"
+        onSubmit={handleSubmit}
+        className="flex w-full brutal-shadow"
+      >
+        <label htmlFor="city-search" className="sr-only">
+          City name
+        </label>
         <input
-          type="text"
+          id="city-search"
+          type="search"
           placeholder="Enter city name"
-          className="px-4 py-3 border-2 border-text-primary dark:border-dark-text-primary flex-grow w-full 
-                    bg-surface dark:bg-dark-surface text-text-primary dark:text-dark-text-primary 
+          autoComplete="off"
+          className="px-4 py-3 border-2 border-text-primary dark:border-dark-text-primary flex-grow w-full
+                    bg-surface dark:bg-dark-surface text-text-primary dark:text-dark-text-primary
                     outline-none font-medium"
           value={city}
           onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
         />
         <button
-          className="px-6 py-3 bg-accent dark:bg-dark-accent text-white font-bold 
-                    border-2 border-l-0 border-text-primary dark:border-dark-text-primary 
+          type="submit"
+          className="px-6 py-3 bg-accent dark:bg-dark-accent text-text-primary dark:text-dark-bg font-bold
+                    border-2 border-l-0 border-text-primary dark:border-dark-text-primary
                     hover:translate-y-[-2px] transition-transform"
-          onClick={handleSearch}
           data-analytics="search-button"
         >
           Search
         </button>
-      </div>
+      </form>
     </div>
   );
 };
 
-export default SearchBar; 
+export default SearchBar;

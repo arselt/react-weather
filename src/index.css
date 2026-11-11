@@ -30,3 +30,28 @@
   --color-border:	#CCCCCC;
   --color-dark-border:	#333333;
 }
+
+/* Theme-dependent values: the .dark class is set on <html> by themeStore */
+:root {
+  --brutal-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.8);
+  --skeleton-base: var(--color-surface);
+  --skeleton-highlight: var(--color-border);
+  --skeleton-ink: var(--color-text-primary);
+}
+
+.dark {
+  --brutal-shadow: 4px 4px 0px 0px rgba(255, 255, 255, 0.5);
+  --skeleton-base: var(--color-dark-surface);
+  --skeleton-highlight: var(--color-dark-border);
+  --skeleton-ink: var(--color-dark-text-primary);
+}
+
+/* Hard offset shadow used by every card, input and button */
+@utility brutal-shadow {
+  box-shadow: var(--brutal-shadow);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
