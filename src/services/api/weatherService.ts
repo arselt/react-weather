@@ -1,23 +1,38 @@
 import axios from 'axios';
 import { getApiClient } from './axios';
-import type { CurrentWeather, ForecastResponse, WeatherQuery } from '../../types/weather';
+import type {
+  AirPollutionResponse,
+  Coordinates,
+  CurrentWeather,
+  ForecastResponse,
+  WeatherQuery,
+} from '../../types/weather';
 
 // Dev calls OpenWeather directly (`q`); production goes through the Netlify functions (`city`)
-const toSearchParams = (query: WeatherQuery) => {
+const toSearchParams = (query: WeatherQuery): Record<string, string | number> => {
   if (query.type === 'coords') {
     return { lat: query.lat, lon: query.lon };
   }
   return import.meta.env.DEV ? { q: query.city } : { city: query.city };
 };
 
-const fetchOpenWeather = async <T>(endpoint: '/weather' | '/forecast', query: WeatherQuery): Promise<T> => {
-  const response = await getApiClient().get<T>(endpoint, { params: toSearchParams(query) });
+const fetchOpenWeather = async <T>(
+  endpoint: '/weather' | '/forecast' | '/air_pollution',
+  params: Record<string, string | number>,
+): Promise<T> => {
+  const response = await getApiClient().get<T>(endpoint, { params });
   return response.data;
 };
 
 export const weatherService = {
-  getCurrentWeather: (query: WeatherQuery) => fetchOpenWeather<CurrentWeather>('/weather', query),
-  getForecast: (query: WeatherQuery) => fetchOpenWeather<ForecastResponse>('/forecast', query),
+  getCurrentWeather: (query: WeatherQuery) =>
+    fetchOpenWeather<CurrentWeather>('/weather', toSearchParams(query)),
+
+  getForecast: (query: WeatherQuery) =>
+    fetchOpenWeather<ForecastResponse>('/forecast', toSearchParams(query)),
+
+  getAirPollution: ({ lat, lon }: Coordinates) =>
+    fetchOpenWeather<AirPollutionResponse>('/air_pollution', { lat, lon }),
 };
 
 export const getWeatherErrorMessage = (error: unknown): string => {

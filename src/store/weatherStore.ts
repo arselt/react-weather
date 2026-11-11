@@ -3,12 +3,21 @@ import { weatherService, getWeatherErrorMessage } from '../services/api/weatherS
 import { analyticsService } from '../services/analyticsService';
 import { useUnitsStore } from './unitsStore';
 import { useRecentCitiesStore } from './recentCitiesStore';
-import { groupForecastByDay } from '../utils/weather';
-import type { CurrentWeather, DailyForecast, WeatherQuery } from '../types/weather';
+import { getHourlyForecast, groupForecastByDay, toAirQuality } from '../utils/weather';
+import type {
+  AirQuality,
+  ForecastResponse,
+  CurrentWeather,
+  DailyForecast,
+  HourlyForecast,
+  WeatherQuery,
+} from '../types/weather';
 
 interface WeatherStore {
   currentWeather: CurrentWeather | null;
   forecast: DailyForecast[];
+  hourly: HourlyForecast[];
+  airQuality: AirQuality | null;
   loading: boolean;
   error: string | null;
   query: WeatherQuery | null;
@@ -17,23 +26,28 @@ interface WeatherStore {
   setError: (message: string) => void;
 }
 
+type SetState = (partial: Partial<WeatherStore>) => void;
+
 // Only the most recent request may update the store, so a slow older response cannot win
 let latestRequestId = 0;
 
-const fetchWeather = async (query: WeatherQuery, set: (partial: Partial<WeatherStore>) => void) => {
+const fetchWeather = async (query: WeatherQuery, set: SetState) => {
   const requestId = ++latestRequestId;
   set({ loading: true, error: null, query });
 
+  let forecastResponse: ForecastResponse;
   try {
-    const [currentWeather, forecastResponse] = await Promise.all([
+    const [currentWeather, forecastResult] = await Promise.all([
       weatherService.getCurrentWeather(query),
       weatherService.getForecast(query),
     ]);
+    forecastResponse = forecastResult;
     if (requestId !== latestRequestId) return;
 
     set({
       currentWeather,
       forecast: groupForecastByDay(forecastResponse),
+      hourly: getHourlyForecast(forecastResponse),
       loading: false,
     });
     useRecentCitiesStore.getState().addCity(currentWeather.name);
@@ -43,15 +57,32 @@ const fetchWeather = async (query: WeatherQuery, set: (partial: Partial<WeatherS
     set({
       currentWeather: null,
       forecast: [],
+      hourly: [],
+      airQuality: null,
       error: getWeatherErrorMessage(error),
       loading: false,
     });
+    return;
+  }
+
+  // Air quality is secondary: if it fails, the rest of the weather still shows
+  try {
+    const airResponse = await weatherService.getAirPollution(forecastResponse.city.coord);
+    if (requestId === latestRequestId) {
+      set({ airQuality: toAirQuality(airResponse) });
+    }
+  } catch {
+    if (requestId === latestRequestId) {
+      set({ airQuality: null });
+    }
   }
 };
 
 export const useWeatherStore = create<WeatherStore>((set, get) => ({
   currentWeather: null,
   forecast: [],
+  hourly: [],
+  airQuality: null,
   loading: false,
   error: null,
   query: null,

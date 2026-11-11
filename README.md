@@ -13,9 +13,12 @@ React Weather is a web application that fetches weather data from the OpenWeathe
 - Fetches and displays weather data from OpenWeather API
 - Support for both metric and imperial units
 - Current weather conditions: feels like, humidity, wind (with direction), pressure, sunrise and sunset in the city's local time
-- 5-day forecast with daily min/max
+- Next 24 hours (3-hour steps) with rain chance, and a 5-day forecast with daily min/max
+- Air quality index with the main pollutants (PM2.5, PM10, NO₂, O₃)
 - City search and "Use my location" (browser geolocation)
-- Recent searches, saved in the browser
+- Saved cities (favorites) and recent searches, kept in the browser
+- Desktop layout with a sidebar; the weather panel adapts to its own width with Tailwind container queries
+- Press `/` to jump to the search box
 - Responsive mobile first design
 - Secure API key handling using Netlify Functions
 

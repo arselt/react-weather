@@ -4,9 +4,9 @@ const Footer: React.FC = () => {
   return (
     <footer className="w-full bg-surface dark:bg-dark-surface border-t-2 border-text-primary dark:border-dark-text-primary shadow-[0_-4px_0px_0px_rgba(0,0,0,0.2)] dark:shadow-[0_-4px_0px_0px_rgba(255,255,255,0.1)] mt-auto">
       <div className="px-4">
-        <div className="flex justify-center items-center py-6 max-w-3xl mx-auto">
+        <div className="flex justify-center items-center py-6 max-w-6xl mx-auto">
           <p className="text-center text-text-secondary dark:text-dark-text-secondary text-balance">
-            <span className="font-bold text-text-primary dark:text-dark-text-primary">ClimArselt</span> is a Neo-Brutalist, mobile-first weather app built with React, TypeScript and Vite. Weather data from the OpenWeatherMap API. Developed by{' '}
+            <span className="font-bold text-text-primary dark:text-dark-text-primary">ClimArselt</span> is a Neo-Brutalist, mobile-first weather app built with React, TypeScript and Vite. Weather data from the OpenWeatherMap API. Press <kbd className="font-bold">/</kbd> to search. Developed by{' '}
             <a href="https://arselt.com" className="text-accent dark:text-dark-accent hover:underline" target="_blank" rel="noopener noreferrer">Arselt</a>.
           </p>
         </div>
