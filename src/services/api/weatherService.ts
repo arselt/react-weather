@@ -1,47 +1,37 @@
+import axios from 'axios';
 import { getApiClient } from './axios';
+import type { CurrentWeather, ForecastResponse, WeatherQuery } from '../../types/weather';
 
-export interface CurrentWeather {
-  main: {
-    temp: number;
-    feels_like: number;
-    humidity: number;
-    pressure: number;
-  };
-  weather: Array<{
-    id: number;
-    main: string;
-    description: string;
-    icon: string;
-  }>;
-  wind: {
-    speed: number;
-    deg: number;
-  };
-  name: string;
-  dt: number;
-  sys: {
-    country: string;
-    sunrise: number;
-    sunset: number;
-  };
-}
-
-// Dev calls OpenWeather directly (`q`), production goes through the Netlify function (`city`)
-const fetchCurrentWeather = async (searchParams: Record<string, string | number>): Promise<CurrentWeather> => {
-  try {
-    const apiClient = getApiClient();
-    const response = await apiClient.get<CurrentWeather>('/weather', { params: searchParams });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching weather data:', error);
-    throw error;
+// Dev calls OpenWeather directly (`q`); production goes through the Netlify functions (`city`)
+const toSearchParams = (query: WeatherQuery) => {
+  if (query.type === 'coords') {
+    return { lat: query.lat, lon: query.lon };
   }
+  return import.meta.env.DEV ? { q: query.city } : { city: query.city };
+};
+
+const fetchOpenWeather = async <T>(endpoint: '/weather' | '/forecast', query: WeatherQuery): Promise<T> => {
+  const response = await getApiClient().get<T>(endpoint, { params: toSearchParams(query) });
+  return response.data;
 };
 
 export const weatherService = {
-  getCurrentWeatherByCity: (city: string): Promise<CurrentWeather> =>
-    fetchCurrentWeather(import.meta.env.DEV ? { q: city } : { city }),
+  getCurrentWeather: (query: WeatherQuery) => fetchOpenWeather<CurrentWeather>('/weather', query),
+  getForecast: (query: WeatherQuery) => fetchOpenWeather<ForecastResponse>('/forecast', query),
+};
 
-  getCurrentWeatherByCoords: (lat: number, lon: number): Promise<CurrentWeather> =>
-    fetchCurrentWeather({ lat, lon }),
+export const getWeatherErrorMessage = (error: unknown): string => {
+  if (!axios.isAxiosError(error)) {
+    return 'Something went wrong while loading the weather. Try again.';
+  }
+  if (!error.response) {
+    return 'Could not reach the weather service. Check your connection and try again.';
+  }
+  if (error.response.status === 404) {
+    return 'City not found. Check the spelling and try again.';
+  }
+  if (error.response.status === 401) {
+    return 'The weather service is not configured correctly. Check the API key.';
+  }
+  return 'Something went wrong while loading the weather. Try again.';
 };

@@ -3,16 +3,17 @@ import React, { useState, FormEvent, ChangeEvent } from 'react';
 interface SearchBarProps {
   initialCity: string;
   onSearch: (city: string) => void;
+  onLocate: () => void;
+  isLocating: boolean;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ initialCity, onSearch }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ initialCity, onSearch, onLocate, isLocating }) => {
   const [city, setCity] = useState(initialCity);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setCity(event.target.value);
   };
 
-  // Search is tracked in weatherStore, so it is not tracked here too
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const trimmedCity = city.trim();
@@ -22,12 +23,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ initialCity, onSearch }) => {
   };
 
   return (
-    <div className="mb-6 flex justify-center w-full">
-      <form
-        role="search"
-        onSubmit={handleSubmit}
-        className="flex w-full brutal-shadow"
-      >
+    <div className="mb-4 flex flex-col gap-3 w-full">
+      <form role="search" onSubmit={handleSubmit} className="flex w-full brutal-shadow">
         <label htmlFor="city-search" className="sr-only">
           City name
         </label>
@@ -52,6 +49,18 @@ const SearchBar: React.FC<SearchBarProps> = ({ initialCity, onSearch }) => {
           Search
         </button>
       </form>
+
+      <button
+        type="button"
+        onClick={onLocate}
+        disabled={isLocating}
+        className="self-start px-4 py-2 bg-surface dark:bg-dark-surface text-text-primary dark:text-dark-text-primary font-bold
+                  border-2 border-text-primary dark:border-dark-text-primary brutal-shadow
+                  hover:translate-y-[-2px] transition-transform disabled:opacity-60 disabled:cursor-wait disabled:hover:translate-y-0"
+        data-analytics="locate-button"
+      >
+        {isLocating ? 'Locating…' : 'Use my location'}
+      </button>
     </div>
   );
 };
