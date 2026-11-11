@@ -1,2 +1,7 @@
 allowBuilds:
   esbuild: true
+minimumReleaseAgeExclude:
+  - minimatch@11.0.8
+overrides:
+  minimatch: ^11.0.8
+  zod: ^4.6.7
