@@ -7,6 +7,8 @@ interface SearchBarProps {
   isLocating: boolean;
 }
 
+export const SEARCH_INPUT_ID = 'city-search';
+
 const SearchBar: React.FC<SearchBarProps> = ({ initialCity, onSearch, onLocate, isLocating }) => {
   const [city, setCity] = useState(initialCity);
 
@@ -25,17 +27,22 @@ const SearchBar: React.FC<SearchBarProps> = ({ initialCity, onSearch, onLocate, 
   return (
     <div className="mb-4 flex flex-col gap-3 w-full">
       <form role="search" onSubmit={handleSubmit} className="flex w-full brutal-shadow">
-        <label htmlFor="city-search" className="sr-only">
+        <label htmlFor={SEARCH_INPUT_ID} className="sr-only">
           City name
         </label>
         <input
-          id="city-search"
-          type="search"
+          id={SEARCH_INPUT_ID}
+          type="text"
           placeholder="Enter city name"
           autoComplete="off"
-          className="px-4 py-3 border-2 border-text-primary dark:border-dark-text-primary flex-grow w-full
-                    bg-surface dark:bg-dark-surface text-text-primary dark:text-dark-text-primary
-                    outline-none font-medium"
+          autoCorrect="off"
+          autoCapitalize="words"
+          spellCheck={false}
+          enterKeyHint="search"
+          className="min-w-0 flex-grow px-4 py-3 border-2 border-text-primary dark:border-dark-text-primary
+                    bg-surface dark:bg-dark-surface text-text-primary dark:text-dark-text-primary font-medium
+                    outline-none focus-visible:outline-solid focus-visible:outline-3 focus-visible:-outline-offset-[6px] focus-visible:outline-accent
+                    dark:focus-visible:outline-dark-accent placeholder:text-text-secondary dark:placeholder:text-dark-text-secondary"
           value={city}
           onChange={handleInputChange}
         />

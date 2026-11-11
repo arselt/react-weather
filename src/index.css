@@ -51,7 +51,10 @@
   box-shadow: var(--brutal-shadow);
 }
 
-:focus-visible {
-  outline: 3px solid var(--color-accent);
-  outline-offset: 2px;
+/* In a layer so utilities such as outline-none can still override it per element */
+@layer base {
+  :focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+  }
 }
