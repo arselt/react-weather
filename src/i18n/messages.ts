@@ -1,6 +1,8 @@
 // English is the source of truth; Spanish must define every key (enforced by the type)
 export const en = {
   'document.title': 'ClimArselt | Weather App',
+  'header.tagline': 'Weather, without the fluff',
+  'header.now': 'Right now in {city}',
 
   'search.label': 'City name',
   'search.placeholder': 'Enter city name',
@@ -76,6 +78,8 @@ export type MessageKey = keyof typeof en;
 
 export const es: Record<MessageKey, string> = {
   'document.title': 'ClimArselt | Clima',
+  'header.tagline': 'El clima, sin rodeos',
+  'header.now': 'Ahora mismo en {city}',
 
   'search.label': 'Nombre de la ciudad',
   'search.placeholder': 'Escribe el nombre de una ciudad',
