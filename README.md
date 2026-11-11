@@ -26,9 +26,9 @@ To run this project locally, follow these steps:
    git clone https://github.com/arselt/react-weather.git
    cd react-weather
    ```
-2. Install dependencies:
+2. Install dependencies (requires Node 22.12+ and pnpm, pinned via `packageManager`):
    ```sh
-   npm install
+   pnpm install
    ```
 3. Get an API key from [OpenWeather](https://openweathermap.org/api) and create a `.env` file in the project directory:
    ```sh
@@ -36,7 +36,7 @@ To run this project locally, follow these steps:
    ```
 4. Start the development server:
    ```sh
-   npm run dev
+   pnpm dev
    ```
 
 ## Deployment to Netlify

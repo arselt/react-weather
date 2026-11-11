@@ -1,7 +1,11 @@
 [build]
-  command = "npm run build"
+  command = "pnpm run build"
   publish = "dist"
   functions = "netlify/functions"
+
+[build.environment]
+  # @netlify/functions v6 and Vite 8 require Node >= 20.19 / 22.12
+  NODE_VERSION = "22"
 
 [[redirects]]
   from = "/*"
