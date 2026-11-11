@@ -7,6 +7,7 @@ export const MAX_RECENT_CITIES = 5;
 interface RecentCitiesState {
   cities: string[];
   addCity: (city: string) => void;
+  clearCities: () => void;
 }
 
 export const useRecentCitiesStore = create<RecentCitiesState>()(
@@ -16,6 +17,10 @@ export const useRecentCitiesStore = create<RecentCitiesState>()(
 
       addCity: (city: string) => {
         set({ cities: addRecentCity(get().cities, city, MAX_RECENT_CITIES) });
+      },
+
+      clearCities: () => {
+        set({ cities: [] });
       },
     }),
     {

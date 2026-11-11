@@ -1,4 +1,5 @@
 import React, { useState, FormEvent, ChangeEvent } from 'react';
+import { useTranslation } from '../i18n/useTranslation';
 
 interface SearchBarProps {
   initialCity: string;
@@ -10,6 +11,7 @@ interface SearchBarProps {
 export const SEARCH_INPUT_ID = 'city-search';
 
 const SearchBar: React.FC<SearchBarProps> = ({ initialCity, onSearch, onLocate, isLocating }) => {
+  const { t } = useTranslation();
   const [city, setCity] = useState(initialCity);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -28,12 +30,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ initialCity, onSearch, onLocate, 
     <div className="mb-4 flex flex-col gap-3 w-full">
       <form role="search" onSubmit={handleSubmit} className="flex w-full brutal-shadow">
         <label htmlFor={SEARCH_INPUT_ID} className="sr-only">
-          City name
+          {t('search.label')}
         </label>
         <input
           id={SEARCH_INPUT_ID}
           type="text"
-          placeholder="Enter city name"
+          placeholder={t('search.placeholder')}
           autoComplete="off"
           autoCorrect="off"
           autoCapitalize="words"
@@ -53,7 +55,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ initialCity, onSearch, onLocate, 
                     hover:translate-y-[-2px] transition-transform"
           data-analytics="search-button"
         >
-          Search
+          {t('search.submit')}
         </button>
       </form>
 
@@ -66,7 +68,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ initialCity, onSearch, onLocate, 
                   hover:translate-y-[-2px] transition-transform disabled:opacity-60 disabled:cursor-wait disabled:hover:translate-y-0"
         data-analytics="locate-button"
       >
-        {isLocating ? 'Locating…' : 'Use my location'}
+        {isLocating ? t('search.locating') : t('search.locate')}
       </button>
     </div>
   );

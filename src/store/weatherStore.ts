@@ -1,14 +1,17 @@
 import { create } from 'zustand';
-import { weatherService, getWeatherErrorMessage } from '../services/api/weatherService';
+import { weatherService, getWeatherErrorKey } from '../services/api/weatherService';
 import { analyticsService } from '../services/analyticsService';
 import { useUnitsStore } from './unitsStore';
 import { useRecentCitiesStore } from './recentCitiesStore';
+import { useLanguageStore } from './languageStore';
 import { getHourlyForecast, groupForecastByDay, toAirQuality } from '../utils/weather';
+import type { MessageKey } from '../i18n/messages';
+import type { Language } from '../i18n/translate';
 import type {
   AirQuality,
-  ForecastResponse,
   CurrentWeather,
   DailyForecast,
+  ForecastResponse,
   HourlyForecast,
   WeatherQuery,
 } from '../types/weather';
@@ -19,11 +22,12 @@ interface WeatherStore {
   hourly: HourlyForecast[];
   airQuality: AirQuality | null;
   loading: boolean;
-  error: string | null;
+  error: MessageKey | null; // translation key, so the message follows the language
   query: WeatherQuery | null;
+  updatedAt: number | null; // epoch ms of the last successful update
   loadWeather: (query: WeatherQuery) => Promise<void>;
   refreshCurrentWeather: () => Promise<void>;
-  setError: (message: string) => void;
+  setError: (key: MessageKey) => void;
 }
 
 type SetState = (partial: Partial<WeatherStore>) => void;
@@ -31,15 +35,15 @@ type SetState = (partial: Partial<WeatherStore>) => void;
 // Only the most recent request may update the store, so a slow older response cannot win
 let latestRequestId = 0;
 
-const fetchWeather = async (query: WeatherQuery, set: SetState) => {
+const fetchWeather = async (query: WeatherQuery, language: Language, set: SetState) => {
   const requestId = ++latestRequestId;
   set({ loading: true, error: null, query });
 
   let forecastResponse: ForecastResponse;
   try {
     const [currentWeather, forecastResult] = await Promise.all([
-      weatherService.getCurrentWeather(query),
-      weatherService.getForecast(query),
+      weatherService.getCurrentWeather(query, language),
+      weatherService.getForecast(query, language),
     ]);
     forecastResponse = forecastResult;
     if (requestId !== latestRequestId) return;
@@ -48,6 +52,7 @@ const fetchWeather = async (query: WeatherQuery, set: SetState) => {
       currentWeather,
       forecast: groupForecastByDay(forecastResponse),
       hourly: getHourlyForecast(forecastResponse),
+      updatedAt: Date.now(),
       loading: false,
     });
     useRecentCitiesStore.getState().addCity(currentWeather.name);
@@ -59,7 +64,7 @@ const fetchWeather = async (query: WeatherQuery, set: SetState) => {
       forecast: [],
       hourly: [],
       airQuality: null,
-      error: getWeatherErrorMessage(error),
+      error: getWeatherErrorKey(error),
       loading: false,
     });
     return;
@@ -86,31 +91,38 @@ export const useWeatherStore = create<WeatherStore>((set, get) => ({
   loading: false,
   error: null,
   query: null,
+  updatedAt: null,
 
   loadWeather: async (query) => {
     analyticsService.trackSearch(
       query.type === 'city' ? query.city : `${query.lat},${query.lon}`,
       query.type === 'city' ? 'city' : 'coordinates',
     );
-    await fetchWeather(query, set);
+    await fetchWeather(query, useLanguageStore.getState().language, set);
   },
 
   refreshCurrentWeather: async () => {
     const { query } = get();
     if (query) {
-      await fetchWeather(query, set);
+      await fetchWeather(query, useLanguageStore.getState().language, set);
     }
   },
 
   // Used for failures that are not a weather request (e.g. location denied); clears the query so no retry is offered
-  setError: (message) => {
-    set({ error: message, loading: false, query: null });
+  setError: (key) => {
+    set({ error: key, loading: false, query: null });
   },
 }));
 
-// Refetch when the unit changes. Subscribed here, outside create(), to avoid a circular import
+// Refetch when the unit or the language changes. Subscribed here, outside create(), to avoid a circular import
 useUnitsStore.subscribe((state, prevState) => {
   if (state.unit !== prevState.unit) {
+    void useWeatherStore.getState().refreshCurrentWeather();
+  }
+});
+
+useLanguageStore.subscribe((state, prevState) => {
+  if (state.language !== prevState.language) {
     void useWeatherStore.getState().refreshCurrentWeather();
   }
 });

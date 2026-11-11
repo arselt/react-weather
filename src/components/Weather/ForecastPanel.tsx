@@ -1,6 +1,7 @@
 import React from 'react';
 import type { DailyForecast } from '../../types/weather';
 import { formatDayLabel, getWeatherIconUrl } from '../../utils/weather';
+import { useTranslation } from '../../i18n/useTranslation';
 
 interface ForecastPanelProps {
   days: DailyForecast[];
@@ -8,6 +9,8 @@ interface ForecastPanelProps {
 }
 
 const ForecastPanel: React.FC<ForecastPanelProps> = ({ days, unitSymbol }) => {
+  const { t, locale } = useTranslation();
+
   if (days.length === 0) {
     return null;
   }
@@ -15,16 +18,16 @@ const ForecastPanel: React.FC<ForecastPanelProps> = ({ days, unitSymbol }) => {
   return (
     <div className="mt-6">
       <h3 className="text-xl font-extrabold text-text-primary dark:text-dark-text-primary mb-3">
-        5-day forecast
+        {t('weather.forecast')}
       </h3>
       <ul className="grid grid-cols-5 gap-2">
-        {days.map((day) => (
+        {days.map((day, index) => (
           <li
             key={day.dateKey}
             className="flex flex-col items-center gap-1 p-2 bg-bg dark:bg-dark-bg border-2 border-text-primary dark:border-dark-text-primary text-center"
           >
             <span className="text-sm font-bold text-text-primary dark:text-dark-text-primary">
-              {formatDayLabel(day.dateKey)}
+              {index === 0 ? t('day.today') : formatDayLabel(day.dateKey, locale)}
             </span>
             <img
               src={getWeatherIconUrl(day.icon)}

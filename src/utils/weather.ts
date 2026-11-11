@@ -1,3 +1,4 @@
+import type { MessageKey } from '../i18n/messages';
 import type {
   AirPollutionResponse,
   AirQuality,
@@ -11,7 +12,6 @@ const FORECAST_DAYS = 5;
 const HOURLY_SLOTS = 8; // 3-hour slots: 24 hours ahead
 const MIDDAY_HOUR = 12;
 const COMPASS_POINTS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
-const AQI_LABELS = ['Good', 'Fair', 'Moderate', 'Poor', 'Very poor'];
 
 // Shifts a unix timestamp into the city's local clock; read it back through UTC getters
 const toCityDate = (unixSeconds: number, timezoneOffset: number) =>
@@ -23,21 +23,21 @@ const hoursFromMidday = (slot: ForecastItem, timezoneOffset: number) =>
 export const getWeatherIconUrl = (icon: string) =>
   `https://openweathermap.org/img/wn/${icon}@2x.png`;
 
-export const formatCityTime = (unixSeconds: number, timezoneOffset: number) =>
-  toCityDate(unixSeconds, timezoneOffset).toLocaleTimeString([], {
+export const formatCityTime = (unixSeconds: number, timezoneOffset: number, locale?: string) =>
+  toCityDate(unixSeconds, timezoneOffset).toLocaleTimeString(locale, {
     hour: '2-digit',
     minute: '2-digit',
     timeZone: 'UTC',
   });
 
-export const formatHourLabel = (unixSeconds: number, timezoneOffset: number) =>
-  toCityDate(unixSeconds, timezoneOffset).toLocaleTimeString([], {
+export const formatHourLabel = (unixSeconds: number, timezoneOffset: number, locale?: string) =>
+  toCityDate(unixSeconds, timezoneOffset).toLocaleTimeString(locale, {
     hour: 'numeric',
     timeZone: 'UTC',
   });
 
-export const formatDayLabel = (dateKey: string) =>
-  new Date(`${dateKey}T12:00:00Z`).toLocaleDateString([], { weekday: 'short', timeZone: 'UTC' });
+export const formatDayLabel = (dateKey: string, locale?: string) =>
+  new Date(`${dateKey}T12:00:00Z`).toLocaleDateString(locale, { weekday: 'short', timeZone: 'UTC' });
 
 // Length of the day between sunrise and sunset, e.g. "10h 52m"
 export const formatDaylight = (sunrise: number, sunset: number) => {
@@ -54,7 +54,9 @@ export const getWindDirection = (degrees: number | undefined) => {
   return COMPASS_POINTS[Math.round(normalized / 45) % COMPASS_POINTS.length];
 };
 
-export const getAirQualityLabel = (aqi: number) => AQI_LABELS[aqi - 1] ?? 'Unknown';
+// Translation key for an AQI level 1..5
+export const getAirQualityKey = (aqi: number): MessageKey =>
+  aqi >= 1 && aqi <= 5 ? `aqi.${aqi}` as MessageKey : 'aqi.unknown';
 
 export const toAirQuality = (response: AirPollutionResponse): AirQuality | null => {
   const reading = response.list[0];
@@ -115,3 +117,9 @@ export const toggleFavoriteCity = (cities: string[], city: string) =>
   cities.some((item) => item.toLowerCase() === city.toLowerCase())
     ? cities.filter((item) => item.toLowerCase() !== city.toLowerCase())
     : [...cities, city];
+
+// How far through the daylight the sun is, 0 at sunrise and 1 at sunset (clamped, so night reads 0 or 1)
+export const getDayProgress = (nowUnix: number, sunrise: number, sunset: number) => {
+  if (sunset <= sunrise) return 0;
+  return Math.min(1, Math.max(0, (nowUnix - sunrise) / (sunset - sunrise)));
+};

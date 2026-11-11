@@ -4,7 +4,8 @@ import {
   addRecentCity,
   formatCityTime,
   formatDaylight,
-  getAirQualityLabel,
+  getAirQualityKey,
+  getDayProgress,
   getHourlyForecast,
   getWindDirection,
   groupForecastByDay,
@@ -52,10 +53,10 @@ test('formatDaylight renders hours and zero-padded minutes', () => {
   assert.equal(formatDaylight(0, 9 * 3600 + 5 * 60), '9h 05m');
 });
 
-test('getAirQualityLabel maps the 1..5 index and tolerates unknown values', () => {
-  assert.equal(getAirQualityLabel(1), 'Good');
-  assert.equal(getAirQualityLabel(5), 'Very poor');
-  assert.equal(getAirQualityLabel(9), 'Unknown');
+test('getAirQualityKey maps the 1..5 index and tolerates unknown values', () => {
+  assert.equal(getAirQualityKey(1), 'aqi.1');
+  assert.equal(getAirQualityKey(5), 'aqi.5');
+  assert.equal(getAirQualityKey(9), 'aqi.unknown');
 });
 
 test('toAirQuality reads the first reading and returns null when empty', () => {
@@ -108,4 +109,12 @@ test('addRecentCity puts the newest first, drops duplicates and caps the list', 
 test('toggleFavoriteCity adds and removes a city case-insensitively', () => {
   assert.deepEqual(toggleFavoriteCity(['Madrid'], 'Lisbon'), ['Madrid', 'Lisbon']);
   assert.deepEqual(toggleFavoriteCity(['Madrid', 'Lisbon'], 'madrid'), ['Lisbon']);
+});
+
+test('getDayProgress is 0 at sunrise, 1 at sunset, and clamped outside daylight', () => {
+  assert.equal(getDayProgress(100, 100, 200), 0);
+  assert.equal(getDayProgress(150, 100, 200), 0.5);
+  assert.equal(getDayProgress(200, 100, 200), 1);
+  assert.equal(getDayProgress(50, 100, 200), 0);
+  assert.equal(getDayProgress(999, 100, 200), 1);
 });

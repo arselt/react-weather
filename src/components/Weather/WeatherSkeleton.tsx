@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from '../../i18n/useTranslation';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 
@@ -8,8 +9,10 @@ const STAT_CARD_COUNT = 6;
 const FORECAST_DAY_COUNT = 5;
 
 const WeatherSkeleton: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
-    <div className="w-full" role="status" aria-label="Loading weather">
+    <div className="w-full" role="status" aria-label={t('weather.loading')}>
       <SkeletonTheme
         baseColor="var(--skeleton-base)"
         highlightColor="var(--skeleton-highlight)"

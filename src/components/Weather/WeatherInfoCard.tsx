@@ -4,7 +4,7 @@ interface WeatherInfoCardProps {
   label: string;
   value: ReactNode;
   unit?: string;
-  detail?: string;
+  detail?: ReactNode;
   className?: string;
 }
 

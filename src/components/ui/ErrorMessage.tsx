@@ -1,19 +1,17 @@
 import React from 'react';
+import { useTranslation } from '../../i18n/useTranslation';
 
 interface ErrorMessageProps {
-  title?: string;
   message: string;
   onRetry?: () => void;
 }
 
-const ErrorMessage: React.FC<ErrorMessageProps> = ({
-  title = 'Error',
-  message,
-  onRetry,
-}) => {
+const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, onRetry }) => {
+  const { t } = useTranslation();
+
   return (
     <div role="alert" className="border-l-4 border-danger dark:border-dark-danger p-4 bg-surface dark:bg-dark-surface text-danger dark:text-dark-danger brutal-shadow">
-      <p className="font-bold text-xl">{title}</p>
+      <p className="font-bold text-xl">{t('error.title')}</p>
       <p>{message}</p>
       {onRetry && (
         <button
@@ -23,7 +21,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
                     border-2 border-text-primary dark:border-dark-text-primary brutal-shadow
                     hover:translate-y-[-2px] transition-transform"
         >
-          Try again
+          {t('error.retry')}
         </button>
       )}
     </div>

@@ -19,6 +19,9 @@ React Weather is a web application that fetches weather data from the OpenWeathe
 - Saved cities (favorites) and recent searches, kept in the browser
 - Desktop layout with a sidebar; the weather panel adapts to its own width with Tailwind container queries
 - Press `/` to jump to the search box
+- English and Spanish UI (switch in Preferences); weather descriptions follow the language
+- Sun position bar, wind direction arrow, today's high and low, and last-updated time with refresh
+- Light and dark themes with sun/moon selector; text colors checked for WCAG AA contrast
 - Responsive mobile first design
 - Secure API key handling using Netlify Functions
 

@@ -3,19 +3,25 @@ export interface Coordinates {
   lon: number;
 }
 
+export type LocationErrorKey = 'error.locationUnsupported' | 'error.locationDenied' | 'error.locationUnavailable';
+
+export class LocationError extends Error {
+  constructor(public readonly key: LocationErrorKey) {
+    super(key);
+  }
+}
+
 export const getCurrentPosition = (): Promise<Coordinates> =>
   new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
-      reject(new Error('Location is not supported by this browser.'));
+      reject(new LocationError('error.locationUnsupported'));
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => resolve({ lat: coords.latitude, lon: coords.longitude }),
-      (positionError) => reject(new Error(
-        positionError.code === positionError.PERMISSION_DENIED
-          ? 'Location access was denied. Allow it in your browser settings or search for a city.'
-          : 'Could not determine your location. Try searching for a city.',
+      (positionError) => reject(new LocationError(
+        positionError.code === positionError.PERMISSION_DENIED ? 'error.locationDenied' : 'error.locationUnavailable',
       )),
       { timeout: 10_000, maximumAge: 5 * 60_000 },
     );

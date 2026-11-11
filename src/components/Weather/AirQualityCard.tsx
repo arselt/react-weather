@@ -1,6 +1,7 @@
 import React from 'react';
 import type { AirQuality } from '../../types/weather';
-import { getAirQualityLabel } from '../../utils/weather';
+import { getAirQualityKey } from '../../utils/weather';
+import { useTranslation } from '../../i18n/useTranslation';
 
 interface AirQualityCardProps {
   airQuality: AirQuality;
@@ -16,6 +17,7 @@ const LEVEL_COLOR_CLASSES = [
 const SEGMENT_COUNT = 5;
 
 const AirQualityCard: React.FC<AirQualityCardProps> = ({ airQuality }) => {
+  const { t } = useTranslation();
   const { aqi, pm25, pm10, no2, o3 } = airQuality;
   const pollutants = [
     { label: 'PM2.5', value: pm25 },
@@ -28,15 +30,15 @@ const AirQualityCard: React.FC<AirQualityCardProps> = ({ airQuality }) => {
     <section className="mt-6 p-4 border-2 border-text-primary dark:border-dark-text-primary bg-bg dark:bg-dark-bg" aria-labelledby="air-quality-title">
       <div className="flex items-baseline justify-between gap-2">
         <h3 id="air-quality-title" className="text-xl font-extrabold text-text-primary dark:text-dark-text-primary">
-          Air quality
+          {t('weather.airQuality')}
         </h3>
         <p className="font-bold text-text-primary dark:text-dark-text-primary">
-          {getAirQualityLabel(aqi)} <span className="text-text-secondary dark:text-dark-text-secondary">(AQI {aqi}/5)</span>
+          {t(getAirQualityKey(aqi))} <span className="text-text-secondary dark:text-dark-text-secondary">{t('weather.aqiValue', { aqi })}</span>
         </p>
       </div>
 
       {/* One block per level, filled up to the current index */}
-      <div className="mt-3 grid grid-cols-5 gap-1" role="img" aria-label={`Air quality index ${aqi} of 5`}>
+      <div className="mt-3 grid grid-cols-5 gap-1" role="img" aria-label={t('weather.aqiBar', { aqi })}>
         {Array.from({ length: SEGMENT_COUNT }, (_, index) => (
           <span
             key={index}

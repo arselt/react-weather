@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { getApiClient } from './axios';
+import type { MessageKey } from '../../i18n/messages';
+import type { Language } from '../../i18n/translate';
 import type {
   AirPollutionResponse,
   Coordinates,
@@ -25,28 +27,20 @@ const fetchOpenWeather = async <T>(
 };
 
 export const weatherService = {
-  getCurrentWeather: (query: WeatherQuery) =>
-    fetchOpenWeather<CurrentWeather>('/weather', toSearchParams(query)),
+  getCurrentWeather: (query: WeatherQuery, language: Language) =>
+    fetchOpenWeather<CurrentWeather>('/weather', { ...toSearchParams(query), lang: language }),
 
-  getForecast: (query: WeatherQuery) =>
-    fetchOpenWeather<ForecastResponse>('/forecast', toSearchParams(query)),
+  getForecast: (query: WeatherQuery, language: Language) =>
+    fetchOpenWeather<ForecastResponse>('/forecast', { ...toSearchParams(query), lang: language }),
 
   getAirPollution: ({ lat, lon }: Coordinates) =>
     fetchOpenWeather<AirPollutionResponse>('/air_pollution', { lat, lon }),
 };
 
-export const getWeatherErrorMessage = (error: unknown): string => {
-  if (!axios.isAxiosError(error)) {
-    return 'Something went wrong while loading the weather. Try again.';
-  }
-  if (!error.response) {
-    return 'Could not reach the weather service. Check your connection and try again.';
-  }
-  if (error.response.status === 404) {
-    return 'City not found. Check the spelling and try again.';
-  }
-  if (error.response.status === 401) {
-    return 'The weather service is not configured correctly. Check the API key.';
-  }
-  return 'Something went wrong while loading the weather. Try again.';
+export const getWeatherErrorKey = (error: unknown): MessageKey => {
+  if (!axios.isAxiosError(error)) return 'error.generic';
+  if (!error.response) return 'error.network';
+  if (error.response.status === 404) return 'error.cityNotFound';
+  if (error.response.status === 401) return 'error.apiKey';
+  return 'error.generic';
 };

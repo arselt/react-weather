@@ -21,6 +21,7 @@ export const createOpenWeatherProxy = (endpoint: 'weather' | 'forecast' | 'air_p
   const city = params.city?.trim().slice(0, MAX_CITY_LENGTH);
   const { lat, lon } = params;
   const units = params.units === 'imperial' ? 'imperial' : 'metric';
+  const language = params.lang === 'es' ? 'es' : 'en'; // weather descriptions only
 
   const hasCoordinates = Boolean(lat && lon);
   const hasValidCoordinates = hasCoordinates
@@ -35,6 +36,9 @@ export const createOpenWeatherProxy = (endpoint: 'weather' | 'forecast' | 'air_p
     appid: process.env.OPENWEATHER_API_KEY!,
     units,
   };
+  if (endpoint !== 'air_pollution') {
+    apiParams.lang = language;
+  }
 
   if (city) {
     apiParams.q = city;

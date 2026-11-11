@@ -1,6 +1,7 @@
 import React from 'react';
 import type { HourlyForecast as HourlyForecastItem } from '../../types/weather';
 import { formatHourLabel, getWeatherIconUrl } from '../../utils/weather';
+import { useTranslation } from '../../i18n/useTranslation';
 
 interface HourlyForecastProps {
   hours: HourlyForecastItem[];
@@ -9,6 +10,8 @@ interface HourlyForecastProps {
 }
 
 const HourlyForecast: React.FC<HourlyForecastProps> = ({ hours, timezone, unitSymbol }) => {
+  const { t, locale } = useTranslation();
+
   if (hours.length === 0) {
     return null;
   }
@@ -16,17 +19,17 @@ const HourlyForecast: React.FC<HourlyForecastProps> = ({ hours, timezone, unitSy
   return (
     <div className="mt-6">
       <h3 className="text-xl font-extrabold text-text-primary dark:text-dark-text-primary mb-3">
-        Next 24 hours
+        {t('weather.hourly')}
       </h3>
       {/* Scrolls sideways on narrow containers, fits in one row on wide ones */}
       <ul className="flex gap-2 overflow-x-auto pb-2 @2xl:grid @2xl:grid-cols-8 @2xl:overflow-visible">
-        {hours.map((hour) => (
+        {hours.map((hour, index) => (
           <li
             key={hour.dt}
             className="flex min-w-[5.5rem] flex-col items-center gap-1 p-2 bg-bg dark:bg-dark-bg border-2 border-text-primary dark:border-dark-text-primary text-center"
           >
             <span className="text-sm font-bold text-text-primary dark:text-dark-text-primary">
-              {formatHourLabel(hour.dt, timezone)}
+              {index === 0 ? t('hour.now') : formatHourLabel(hour.dt, timezone, locale)}
             </span>
             <img
               src={getWeatherIconUrl(hour.icon)}
@@ -39,7 +42,7 @@ const HourlyForecast: React.FC<HourlyForecastProps> = ({ hours, timezone, unitSy
               {Math.round(hour.temp)}{unitSymbol}
             </span>
             <span className="text-xs font-medium text-text-secondary dark:text-dark-text-secondary">
-              {hour.precipitationChance}% rain
+              {t('weather.rain', { chance: hour.precipitationChance })}
             </span>
           </li>
         ))}
