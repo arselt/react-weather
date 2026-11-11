@@ -63,7 +63,7 @@ const CurrentWeather: React.FC = () => {
   return (
     // @container: the children adapt to this panel's width, not the window's
     <section className="@container animate-fade-in bg-surface dark:bg-dark-surface border-2 border-text-primary dark:border-dark-text-primary p-6 w-full brutal-shadow">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
         <h2 className="text-3xl font-extrabold text-text-primary dark:text-dark-text-primary mb-2">
           {name}, {sys.country}
         </h2>

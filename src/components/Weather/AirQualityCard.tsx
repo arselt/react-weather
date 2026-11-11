@@ -28,7 +28,7 @@ const AirQualityCard: React.FC<AirQualityCardProps> = ({ airQuality }) => {
 
   return (
     <section className="mt-6 p-4 border-2 border-text-primary dark:border-dark-text-primary bg-bg dark:bg-dark-bg" aria-labelledby="air-quality-title">
-      <div className="flex items-baseline justify-between gap-2">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <h3 id="air-quality-title" className="text-xl font-extrabold text-text-primary dark:text-dark-text-primary">
           {t('weather.airQuality')}
         </h3>

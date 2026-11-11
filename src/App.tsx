@@ -77,16 +77,25 @@ function App() {
     <div className="flex flex-col min-h-screen bg-bg dark:bg-dark-bg">
       <Header />
       <main className="flex-grow px-4 py-8 text-text-primary dark:text-dark-text-primary">
-        {/* Sidebar holds general controls and lists; the main view holds the weather details */}
+        {/*
+          Mobile: search, then the weather, then the lists.
+          Desktop: search and lists in the left column, weather on the right.
+        */}
         <div className="mx-auto w-full max-w-6xl grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)] lg:items-start">
-          <aside className="flex flex-col gap-6 lg:sticky lg:top-6" aria-label={t('section.preferences')}>
+          <div className="lg:col-start-1 lg:row-start-1">
             <SearchBar
               initialCity={city}
               onSearch={handleSearch}
               onLocate={handleLocate}
               isLocating={isLocating}
             />
+          </div>
 
+          <div className="min-w-0 lg:col-start-2 lg:row-start-1 lg:row-span-2">
+            <CurrentWeather />
+          </div>
+
+          <aside className="flex flex-col gap-6 lg:col-start-1 lg:row-start-2" aria-label={t('section.preferences')}>
             <SidebarSection id="saved-cities-title" title={t('section.saved')}>
               <CityList
                 cities={favoriteCities}
@@ -120,10 +129,6 @@ function App() {
               <Preferences />
             </SidebarSection>
           </aside>
-
-          <div className="min-w-0">
-            <CurrentWeather />
-          </div>
         </div>
       </main>
       <Footer />

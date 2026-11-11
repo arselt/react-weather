@@ -23,7 +23,7 @@ const Header: React.FC = () => {
           </div>
 
           {currentWeather && (
-            <div className="flex items-center gap-3 px-3 py-2 bg-bg dark:bg-dark-bg border-2 border-text-primary dark:border-dark-text-primary brutal-shadow">
+            <div className="hidden md:flex items-center gap-3 px-3 py-2 bg-bg dark:bg-dark-bg border-2 border-text-primary dark:border-dark-text-primary brutal-shadow">
               <img
                 src={getWeatherIconUrl(currentWeather.weather[0].icon)}
                 alt=""
