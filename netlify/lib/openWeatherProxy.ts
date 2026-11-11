@@ -12,7 +12,7 @@ const isValidCoordinate = (value: string, limit: number) => {
 };
 
 // Shared by every function that proxies OpenWeather, so the API key never reaches the browser
-export const createOpenWeatherProxy = (endpoint: 'weather' | 'forecast'): Handler => async (event) => {
+export const createOpenWeatherProxy = (endpoint: 'weather' | 'forecast' | 'air_pollution'): Handler => async (event) => {
   if (event.httpMethod !== 'GET') {
     return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
   }
