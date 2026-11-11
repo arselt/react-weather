@@ -27,6 +27,7 @@ function App() {
   const favoriteCities = useFavoriteCitiesStore((state) => state.cities);
   const toggleFavoriteCity = useFavoriteCitiesStore((state) => state.toggleCity);
   const [isLocating, setIsLocating] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // mobile drawer; always visible on lg+
   const { t } = useTranslation();
   const language = useLanguageStore((state) => state.language);
 
@@ -42,6 +43,16 @@ function App() {
     void useWeatherStore.getState().loadWeather({ type: 'city', city: useCityStore.getState().city });
   }, []);
 
+  // Escape closes the mobile menu
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsMenuOpen(false);
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [isMenuOpen]);
+
   // "/" jumps to the search box, unless the user is already typing somewhere
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -55,6 +66,7 @@ function App() {
   }, []);
 
   const handleSearch = (newCity: string) => {
+    setIsMenuOpen(false);
     setCity(newCity);
     void useWeatherStore.getState().loadWeather({ type: 'city', city: newCity });
   };
@@ -75,7 +87,7 @@ function App() {
 
   return (
     <div className="flex flex-col min-h-screen bg-bg dark:bg-dark-bg">
-      <Header />
+      <Header isMenuOpen={isMenuOpen} onToggleMenu={() => setIsMenuOpen((open) => !open)} />
       <main className="flex-grow px-4 py-8 text-text-primary dark:text-dark-text-primary">
         {/*
           Mobile: search, then the weather, then the lists.
@@ -95,7 +107,32 @@ function App() {
             <CurrentWeather />
           </div>
 
-          <aside className="flex flex-col gap-6 lg:col-start-1 lg:row-start-2" aria-label={t('section.preferences')}>
+          {isMenuOpen && (
+            <button
+              type="button"
+              aria-label={t('menu.overlay')}
+              onClick={() => setIsMenuOpen(false)}
+              className="fixed inset-0 z-30 bg-black/50 lg:hidden"
+            />
+          )}
+
+          <aside
+            id="sidebar-menu"
+            aria-label={t('section.preferences')}
+            className={`fixed inset-y-0 right-0 z-40 flex w-[min(88vw,22rem)] flex-col gap-6 overflow-y-auto border-l-2 border-text-primary dark:border-dark-text-primary bg-bg dark:bg-dark-bg p-4 transition-transform duration-200
+              ${isMenuOpen ? 'translate-x-0 visible' : 'translate-x-full invisible'}
+              lg:static lg:z-auto lg:w-auto lg:translate-x-0 lg:visible lg:overflow-visible lg:border-0 lg:bg-transparent lg:p-0 lg:col-start-1 lg:row-start-2`}
+          >
+            <div className="flex justify-end lg:hidden">
+              <button
+                type="button"
+                onClick={() => setIsMenuOpen(false)}
+                className="px-3 py-1 font-bold bg-surface dark:bg-dark-surface text-text-primary dark:text-dark-text-primary border-2 border-text-primary dark:border-dark-text-primary brutal-shadow"
+              >
+                {t('menu.close')}
+              </button>
+            </div>
+
             <SidebarSection id="saved-cities-title" title={t('section.saved')}>
               <CityList
                 cities={favoriteCities}

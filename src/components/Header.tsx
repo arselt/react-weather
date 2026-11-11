@@ -4,7 +4,12 @@ import { useUnitsStore } from '../store/unitsStore';
 import { useTranslation } from '../i18n/useTranslation';
 import { getWeatherIconUrl } from '../utils/weather';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  isMenuOpen: boolean;
+  onToggleMenu: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ isMenuOpen, onToggleMenu }) => {
   const { t } = useTranslation();
   const currentWeather = useWeatherStore((state) => state.currentWeather);
   const { unitSymbol } = useUnitsStore();
@@ -21,6 +26,21 @@ const Header: React.FC = () => {
               {t('header.tagline')}
             </p>
           </div>
+
+          <button
+            type="button"
+            onClick={onToggleMenu}
+            aria-expanded={isMenuOpen}
+            aria-controls="sidebar-menu"
+            className="lg:hidden ml-auto flex items-center gap-2 px-3 py-2 font-bold bg-surface dark:bg-dark-surface text-text-primary dark:text-dark-text-primary border-2 border-text-primary dark:border-dark-text-primary brutal-shadow hover:translate-y-[-2px] transition-transform"
+          >
+            <span aria-hidden="true" className="flex flex-col gap-[3px]">
+              <span className="block w-5 h-[3px] bg-text-primary dark:bg-dark-text-primary" />
+              <span className="block w-5 h-[3px] bg-text-primary dark:bg-dark-text-primary" />
+              <span className="block w-5 h-[3px] bg-text-primary dark:bg-dark-text-primary" />
+            </span>
+            {t('menu.open')}
+          </button>
 
           {currentWeather && (
             <div className="hidden md:flex items-center gap-3 px-3 py-2 bg-bg dark:bg-dark-bg border-2 border-text-primary dark:border-dark-text-primary brutal-shadow">
