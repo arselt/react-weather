@@ -26,46 +26,22 @@ export interface CurrentWeather {
   };
 }
 
-export const weatherService = {
-  /**
-   * Get current weather data by city name
-   */
-  getCurrentWeatherByCity: async (city: string): Promise<CurrentWeather> => {
-    try {
-      const apiClient = getApiClient();
-      const isLocalDev = import.meta.env.DEV;
-      
-      // In production use the Netlify function, in development call OpenWeather directly
-      const endpoint = isLocalDev ? '/weather' : '/weather';
-      const params = isLocalDev ? { q: city } : { city };
-      
-      const response = await apiClient.get(endpoint, { params });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching weather data:', error);
-      throw error;
-    }
-  },
-
-  /**
-   * Get current weather data by coordinates
-   */
-  getCurrentWeatherByCoords: async (lat: number, lon: number): Promise<CurrentWeather> => {
-    try {
-      const apiClient = getApiClient();
-      const isLocalDev = import.meta.env.DEV;
-      
-      // In production use the Netlify function, in development call OpenWeather directly
-      const endpoint = isLocalDev ? '/weather' : '/weather';
-      // Parameter names stay the same for both
-      
-      const response = await apiClient.get(endpoint, {
-        params: { lat, lon }
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching weather data:', error);
-      throw error;
-    }
+// Dev calls OpenWeather directly (`q`), production goes through the Netlify function (`city`)
+const fetchCurrentWeather = async (searchParams: Record<string, string | number>): Promise<CurrentWeather> => {
+  try {
+    const apiClient = getApiClient();
+    const response = await apiClient.get<CurrentWeather>('/weather', { params: searchParams });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching weather data:', error);
+    throw error;
   }
-}; 
+};
+
+export const weatherService = {
+  getCurrentWeatherByCity: (city: string): Promise<CurrentWeather> =>
+    fetchCurrentWeather(import.meta.env.DEV ? { q: city } : { city }),
+
+  getCurrentWeatherByCoords: (lat: number, lon: number): Promise<CurrentWeather> =>
+    fetchCurrentWeather({ lat, lon }),
+};
