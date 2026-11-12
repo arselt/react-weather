@@ -1,78 +1,128 @@
 import { create } from 'zustand';
-import { weatherService, CurrentWeather } from '../services/api/weatherService';
+import { weatherService, getWeatherErrorKey } from '../services/api/weatherService';
 import { analyticsService } from '../services/analyticsService';
 import { useUnitsStore } from './unitsStore';
+import { useRecentCitiesStore } from './recentCitiesStore';
+import { useLanguageStore } from './languageStore';
+import { getHourlyForecast, groupForecastByDay, toAirQuality } from '../utils/weather';
+import type { MessageKey } from '../i18n/messages';
+import type { Language } from '../i18n/translate';
+import type {
+  AirQuality,
+  CurrentWeather,
+  DailyForecast,
+  ForecastResponse,
+  HourlyForecast,
+  WeatherQuery,
+} from '../types/weather';
 
 interface WeatherStore {
   currentWeather: CurrentWeather | null;
+  forecast: DailyForecast[];
+  hourly: HourlyForecast[];
+  airQuality: AirQuality | null;
   loading: boolean;
-  error: string | null;
-  currentCity: string | null;
-  currentCoords: { lat: number; lon: number } | null;
-  fetchWeatherByCity: (city: string) => Promise<void>;
-  fetchWeatherByCoords: (lat: number, lon: number) => Promise<void>;
+  error: MessageKey | null; // translation key, so the message follows the language
+  query: WeatherQuery | null;
+  updatedAt: number | null; // epoch ms of the last successful update
+  loadWeather: (query: WeatherQuery) => Promise<void>;
   refreshCurrentWeather: () => Promise<void>;
+  setError: (key: MessageKey) => void;
 }
+
+type SetState = (partial: Partial<WeatherStore>) => void;
+
+// Only the most recent request may update the store, so a slow older response cannot win
+let latestRequestId = 0;
+
+const fetchWeather = async (query: WeatherQuery, language: Language, set: SetState) => {
+  const requestId = ++latestRequestId;
+  set({ loading: true, error: null, query });
+
+  let forecastResponse: ForecastResponse;
+  try {
+    const [currentWeather, forecastResult] = await Promise.all([
+      weatherService.getCurrentWeather(query, language),
+      weatherService.getForecast(query, language),
+    ]);
+    forecastResponse = forecastResult;
+    if (requestId !== latestRequestId) return;
+
+    set({
+      currentWeather,
+      forecast: groupForecastByDay(forecastResponse),
+      hourly: getHourlyForecast(forecastResponse),
+      updatedAt: Date.now(),
+      loading: false,
+    });
+    useRecentCitiesStore.getState().addCity(currentWeather.name);
+  } catch (error) {
+    if (requestId !== latestRequestId) return;
+
+    set({
+      currentWeather: null,
+      forecast: [],
+      hourly: [],
+      airQuality: null,
+      error: getWeatherErrorKey(error),
+      loading: false,
+    });
+    return;
+  }
+
+  // Air quality is secondary: if it fails, the rest of the weather still shows
+  try {
+    const airResponse = await weatherService.getAirPollution(forecastResponse.city.coord);
+    if (requestId === latestRequestId) {
+      set({ airQuality: toAirQuality(airResponse) });
+    }
+  } catch {
+    if (requestId === latestRequestId) {
+      set({ airQuality: null });
+    }
+  }
+};
 
 export const useWeatherStore = create<WeatherStore>((set, get) => ({
   currentWeather: null,
+  forecast: [],
+  hourly: [],
+  airQuality: null,
   loading: false,
   error: null,
-  currentCity: null,
-  currentCoords: null,
+  query: null,
+  updatedAt: null,
 
-  fetchWeatherByCity: async (city: string) => {
-    set({ loading: true, error: null, currentCity: city, currentCoords: null });
-    try {
-      // Track city search
-      analyticsService.trackSearch(city, 'city');
-      
-      const weatherData = await weatherService.getCurrentWeatherByCity(city);
-      set({ currentWeather: weatherData, loading: false });
-    } catch (error) {
-      set({ 
-        error: error instanceof Error ? error.message : 'Failed to fetch weather data', 
-        loading: false 
-      });
-    }
-  },
-
-  fetchWeatherByCoords: async (lat: number, lon: number) => {
-    set({ loading: true, error: null, currentCity: null, currentCoords: { lat, lon } });
-    try {
-      // Track coordinates search
-      analyticsService.trackSearch(`${lat},${lon}`, 'coordinates');
-      
-      const weatherData = await weatherService.getCurrentWeatherByCoords(lat, lon);
-      set({ currentWeather: weatherData, loading: false });
-    } catch (error) {
-      set({ 
-        error: error instanceof Error ? error.message : 'Failed to fetch weather data', 
-        loading: false 
-      });
-    }
+  loadWeather: async (query) => {
+    analyticsService.trackSearch(
+      query.type === 'city' ? query.city : `${query.lat},${query.lon}`,
+      query.type === 'city' ? 'city' : 'coordinates',
+    );
+    await fetchWeather(query, useLanguageStore.getState().language, set);
   },
 
   refreshCurrentWeather: async () => {
-    const { currentCity, currentCoords } = get();
-    
-    if (currentCity) {
-      await get().fetchWeatherByCity(currentCity);
-    } else if (currentCoords) {
-      await get().fetchWeatherByCoords(currentCoords.lat, currentCoords.lon);
+    const { query } = get();
+    if (query) {
+      await fetchWeather(query, useLanguageStore.getState().language, set);
     }
-  }
+  },
+
+  // Used for failures that are not a weather request (e.g. location denied); clears the query so no retry is offered
+  setError: (key) => {
+    set({ error: key, loading: false, query: null });
+  },
 }));
 
-// Set up a listener to refresh weather data when units change
-// This is outside the store to avoid circular dependencies
-useUnitsStore.subscribe(
-  // Only trigger when the unit changes
-  (state, prevState) => {
-    if (state.unit !== prevState.unit) {
-      // Get the current weather store state and refresh data
-      const weatherStore = useWeatherStore.getState();
-      weatherStore.refreshCurrentWeather();
-    }
+// Refetch when the unit or the language changes. Subscribed here, outside create(), to avoid a circular import
+useUnitsStore.subscribe((state, prevState) => {
+  if (state.unit !== prevState.unit) {
+    void useWeatherStore.getState().refreshCurrentWeather();
   }
-); 
+});
+
+useLanguageStore.subscribe((state, prevState) => {
+  if (state.language !== prevState.language) {
+    void useWeatherStore.getState().refreshCurrentWeather();
+  }
+});

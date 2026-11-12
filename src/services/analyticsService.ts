@@ -11,7 +11,7 @@ export const analyticsService = {
   },
 
   // Track an event
-  trackEvent: (eventName: string, eventParams: Record<string, any>) => {
+  trackEvent: (eventName: string, eventParams: Record<string, unknown>) => {
     if (window.gtag) {
       window.gtag('event', eventName, eventParams);
     }

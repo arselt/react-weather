@@ -25,8 +25,61 @@
   --color-dark-success:	#7BAF75;
 
   --color-danger:	#9C3D38;
-  --color-dark-danger:	#C35850;
+  --color-dark-danger:	#E07A72; /* lightened from #C35850 to pass AA on dark surfaces */
+
+  /* Accent-colored text (links) on light backgrounds; the brand accent is too light for text */
+  --color-link: #37596B;
 
   --color-border:	#CCCCCC;
   --color-dark-border:	#333333;
+}
+
+/* Theme-dependent values: the .dark class is set on <html> by themeStore */
+:root {
+  --brutal-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.8);
+  --skeleton-base: var(--color-surface);
+  --skeleton-highlight: var(--color-border);
+  --skeleton-ink: var(--color-text-primary);
+}
+
+.dark {
+  --brutal-shadow: 4px 4px 0px 0px rgba(255, 255, 255, 0.5);
+  --skeleton-base: var(--color-dark-surface);
+  --skeleton-highlight: var(--color-dark-border);
+  --skeleton-ink: var(--color-dark-text-primary);
+}
+
+/* Hard offset shadow used by every card, input and button */
+@utility brutal-shadow {
+  box-shadow: var(--brutal-shadow);
+}
+
+/* In a layer so utilities such as outline-none can still override it per element */
+@layer base {
+  :focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+/* Entrance for the weather panel; plain CSS so it can be switched off for reduced motion */
+.animate-fade-in {
+  animation: weather-fade-in 300ms ease-out both;
+}
+
+@keyframes weather-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in {
+    animation: none;
+  }
 }

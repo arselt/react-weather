@@ -1,12 +1,18 @@
 import React from 'react';
+import { useTranslation } from '../i18n/useTranslation';
 
 const Footer: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <footer className="w-full bg-surface dark:bg-dark-surface border-t-2 border-text-primary dark:border-dark-text-primary shadow-[0_-4px_0px_0px_rgba(0,0,0,0.2)] dark:shadow-[0_-4px_0px_0px_rgba(255,255,255,0.1)] mt-auto">
       <div className="px-4">
-        <div className="flex justify-center items-center py-6 max-w-3xl mx-auto">
+        <div className="flex justify-center items-center py-6 max-w-6xl mx-auto">
           <p className="text-center text-text-secondary dark:text-dark-text-secondary text-balance">
-            <span className="font-bold text-text-primary dark:text-dark-text-primary">ClimArselt</span> is a Neo-Brutalist, mobile-first weather app built with React and TypeScript using Vite. Data provided by OpenWeatherMap API via axios. State management with Zustand, skeletons with react-loading-skeleton. <span className="font-bold text-text-primary dark:text-dark-text-primary"> Developed by <a href="https://arselt.com" className="text-accent dark:text-dark-accent hover:underline" target="_blank" rel="noopener noreferrer">Arselt</a> .</span>
+            <span className="font-bold text-text-primary dark:text-dark-text-primary">ClimArselt</span> {t('footer.description')}{' '}
+            {t('footer.shortcutBefore')} <kbd className="font-bold">/</kbd> {t('footer.shortcutAfter')}{' '}
+            {t('footer.developedBy')}{' '}
+            <a href="https://arselt.com" className="text-link dark:text-dark-accent hover:underline" target="_blank" rel="noopener noreferrer">Arselt</a>.
           </p>
         </div>
       </div>

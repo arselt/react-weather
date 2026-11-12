@@ -1,15 +1,13 @@
 import axios from 'axios';
 import { useUnitsStore } from '../../store/unitsStore';
 
-// Create a base axios instance with common configuration
-const createApiClient = (unit: string = 'metric') => {
-  // For local development, use a different base URL
+// Dev talks to OpenWeather directly with the local key; production goes through the Netlify function
+const createApiClient = (unit: string) => {
   const isLocalDev = import.meta.env.DEV;
-  const baseURL = isLocalDev 
-    ? 'https://api.openweathermap.org/data/2.5' 
+  const baseURL = isLocalDev
+    ? 'https://api.openweathermap.org/data/2.5'
     : '/.netlify/functions';
 
-  // If in development, include the API key in requests
   const params: Record<string, string> = { units: unit };
   if (isLocalDev) {
     params.appid = import.meta.env.VITE_API_KEY;
@@ -24,11 +22,5 @@ const createApiClient = (unit: string = 'metric') => {
   });
 };
 
-// Export a function that returns an API client with the current unit setting
-export const getApiClient = () => {
-  const unit = useUnitsStore.getState().unit;
-  return createApiClient(unit);
-};
-
-// Export a default client that uses metric as fallback
-export default createApiClient();
+// Read the unit at call time so requests always use the current setting
+export const getApiClient = () => createApiClient(useUnitsStore.getState().unit);

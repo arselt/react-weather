@@ -1,71 +1,46 @@
+import axios from 'axios';
 import { getApiClient } from './axios';
+import type { MessageKey } from '../../i18n/messages';
+import type { Language } from '../../i18n/translate';
+import type {
+  AirPollutionResponse,
+  Coordinates,
+  CurrentWeather,
+  ForecastResponse,
+  WeatherQuery,
+} from '../../types/weather';
 
-export interface CurrentWeather {
-  main: {
-    temp: number;
-    feels_like: number;
-    humidity: number;
-    pressure: number;
-  };
-  weather: Array<{
-    id: number;
-    main: string;
-    description: string;
-    icon: string;
-  }>;
-  wind: {
-    speed: number;
-    deg: number;
-  };
-  name: string;
-  dt: number;
-  sys: {
-    country: string;
-    sunrise: number;
-    sunset: number;
-  };
-}
+// Dev calls OpenWeather directly (`q`); production goes through the Netlify functions (`city`)
+const toSearchParams = (query: WeatherQuery): Record<string, string | number> => {
+  if (query.type === 'coords') {
+    return { lat: query.lat, lon: query.lon };
+  }
+  return import.meta.env.DEV ? { q: query.city } : { city: query.city };
+};
+
+const fetchOpenWeather = async <T>(
+  endpoint: '/weather' | '/forecast' | '/air_pollution',
+  params: Record<string, string | number>,
+): Promise<T> => {
+  const response = await getApiClient().get<T>(endpoint, { params });
+  return response.data;
+};
 
 export const weatherService = {
-  /**
-   * Get current weather data by city name
-   */
-  getCurrentWeatherByCity: async (city: string): Promise<CurrentWeather> => {
-    try {
-      const apiClient = getApiClient();
-      const isLocalDev = import.meta.env.DEV;
-      
-      // In production use the Netlify function, in development call OpenWeather directly
-      const endpoint = isLocalDev ? '/weather' : '/weather';
-      const params = isLocalDev ? { q: city } : { city };
-      
-      const response = await apiClient.get(endpoint, { params });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching weather data:', error);
-      throw error;
-    }
-  },
+  getCurrentWeather: (query: WeatherQuery, language: Language) =>
+    fetchOpenWeather<CurrentWeather>('/weather', { ...toSearchParams(query), lang: language }),
 
-  /**
-   * Get current weather data by coordinates
-   */
-  getCurrentWeatherByCoords: async (lat: number, lon: number): Promise<CurrentWeather> => {
-    try {
-      const apiClient = getApiClient();
-      const isLocalDev = import.meta.env.DEV;
-      
-      // In production use the Netlify function, in development call OpenWeather directly
-      const endpoint = isLocalDev ? '/weather' : '/weather';
-      // Parameter names stay the same for both
-      
-      const response = await apiClient.get(endpoint, {
-        params: { lat, lon }
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching weather data:', error);
-      throw error;
-    }
-  }
-}; 
+  getForecast: (query: WeatherQuery, language: Language) =>
+    fetchOpenWeather<ForecastResponse>('/forecast', { ...toSearchParams(query), lang: language }),
+
+  getAirPollution: ({ lat, lon }: Coordinates) =>
+    fetchOpenWeather<AirPollutionResponse>('/air_pollution', { lat, lon }),
+};
+
+export const getWeatherErrorKey = (error: unknown): MessageKey => {
+  if (!axios.isAxiosError(error)) return 'error.generic';
+  if (!error.response) return 'error.network';
+  if (error.response.status === 404) return 'error.cityNotFound';
+  if (error.response.status === 401) return 'error.apiKey';
+  return 'error.generic';
+};
