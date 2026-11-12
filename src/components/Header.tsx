@@ -16,7 +16,7 @@ const Header: React.FC<HeaderProps> = ({ isMenuOpen, onToggleMenu }) => {
   const { unitSymbol } = useUnitsStore();
 
   return (
-    <header className="w-full bg-surface dark:bg-dark-surface border-b-2 border-text-primary dark:border-dark-text-primary shadow-[0_4px_0px_0px_rgba(0,0,0,0.2)] dark:shadow-[0_4px_0px_0px_rgba(255,255,255,0.1)]">
+    <header className="w-full pt-[env(safe-area-inset-top)] bg-surface dark:bg-dark-surface border-b-2 border-text-primary dark:border-dark-text-primary shadow-[0_4px_0px_0px_rgba(0,0,0,0.2)] dark:shadow-[0_4px_0px_0px_rgba(255,255,255,0.1)]">
       <div className="px-4">
         <div className="max-w-6xl mx-auto py-5 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">

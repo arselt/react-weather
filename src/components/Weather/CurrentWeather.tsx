@@ -63,25 +63,30 @@ const CurrentWeather: React.FC = () => {
   return (
     // @container: the children adapt to this panel's width, not the window's
     <section className="@container animate-fade-in bg-surface dark:bg-dark-surface border-2 border-text-primary dark:border-dark-text-primary p-6 w-full brutal-shadow">
-      <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
-        <h2 className="text-3xl font-extrabold text-text-primary dark:text-dark-text-primary mb-2">
-          {name}, {sys.country}
-        </h2>
-        <FavoriteButton city={name} />
-      </div>
+      <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
+        <div className="min-w-0">
+          <h2 className="text-3xl font-extrabold text-text-primary dark:text-dark-text-primary">
+            {name}, {sys.country}
+          </h2>
+          {updatedAt && (
+            <p className="mt-1 text-sm font-medium text-text-secondary dark:text-dark-text-secondary">
+              {t('weather.updated', { time: new Date(updatedAt).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' }) })}
+            </p>
+          )}
+        </div>
 
-      {updatedAt && (
-        <div className="mb-2 flex flex-wrap items-center gap-3 text-sm font-medium text-text-secondary dark:text-dark-text-secondary">
-          <span>{t('weather.updated', { time: new Date(updatedAt).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' }) })}</span>
+        {/* Actions for this city, grouped together */}
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => void refreshCurrentWeather()}
-            className="px-2 py-1 font-bold text-text-primary dark:text-dark-text-primary bg-bg dark:bg-dark-bg border-2 border-text-primary dark:border-dark-text-primary hover:translate-y-[-2px] transition-transform"
+            className="shrink-0 px-3 py-1 font-bold bg-bg dark:bg-dark-bg text-text-primary dark:text-dark-text-primary border-2 border-text-primary dark:border-dark-text-primary brutal-shadow hover:translate-y-[-2px] transition-transform"
           >
             {t('weather.refresh')}
           </button>
+          <FavoriteButton city={name} />
         </div>
-      )}
+      </div>
 
       <MainWeatherCard
         range={forecast[0] ? { high: forecast[0].maxTemp, low: forecast[0].minTemp } : undefined}

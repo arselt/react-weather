@@ -119,7 +119,7 @@ function App() {
           <aside
             id="sidebar-menu"
             aria-label={t('section.preferences')}
-            className={`fixed inset-y-0 right-0 z-40 flex w-[min(88vw,22rem)] flex-col gap-6 overflow-y-auto border-l-2 border-text-primary dark:border-dark-text-primary bg-bg dark:bg-dark-bg p-4 transition-transform duration-200
+            className={`fixed top-0 bottom-0 right-0 z-40 flex w-[min(88vw,22rem)] flex-col gap-6 overflow-y-auto pb-[max(1rem,env(safe-area-inset-bottom))] border-l-2 border-text-primary dark:border-dark-text-primary bg-bg dark:bg-dark-bg p-4 transition-transform duration-200
               ${isMenuOpen ? 'translate-x-0 visible' : 'translate-x-full invisible'}
               lg:static lg:z-auto lg:w-auto lg:translate-x-0 lg:visible lg:overflow-visible lg:border-0 lg:bg-transparent lg:p-0 lg:col-start-1 lg:row-start-2`}
           >
