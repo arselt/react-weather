@@ -93,7 +93,7 @@ function App() {
           Mobile: search, then the weather, then the lists.
           Desktop: search and lists in the left column, weather on the right.
         */}
-        <div className="mx-auto w-full max-w-6xl grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)] lg:items-start">
+        <div className="mx-auto w-full max-w-6xl grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)] lg:grid-rows-[auto_1fr] lg:items-start">
           <div className="lg:col-start-1 lg:row-start-1">
             <SearchBar
               initialCity={city}
@@ -103,7 +103,7 @@ function App() {
             />
           </div>
 
-          <div className="min-w-0 lg:col-start-2 lg:row-start-1 lg:row-span-2">
+          <div className="min-w-0 lg:col-start-2 lg:row-span-2 lg:row-start-1">
             <CurrentWeather />
           </div>
 
